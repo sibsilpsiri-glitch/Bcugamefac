@@ -3,248 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>คุณเหมาะกับการเป็นแฟนคณะไหน? - BCU</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>คุณเหมาะกับการเป็นแฟนคณะไหน? | มหาวิทยาลัยเบงจันทร์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f9f9f9;
-            --text-color: #333;
-            --card-bg: #fff;
+            --bg-color: #fcfcfc;
+            --text-main: #2d2d2d;
+            --text-muted: #888888;
+            --card-bg: #ffffff;
+            --primary: #1a1a1a;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Prompt', sans-serif;
+        }
+
+        body {
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
+            line-height: 1.6;
         }
+
         #app {
             background: var(--card-bg);
+            width: 100%;
             max-width: 600px;
-            width: 90%;
+            min-height: 80vh;
+            margin: 20px;
+            padding: 40px;
             border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
             text-align: center;
-            transition: all 0.4s ease;
+            color: var(--primary);
         }
-        h1 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 600; }
-        p.subtitle { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
-        
-        .btn-start {
-            background: #111; color: #fff; border: none;
-            padding: 15px 40px; font-size: 1.1rem; border-radius: 50px;
-            cursor: pointer; font-family: 'Prompt', sans-serif;
-            transition: transform 0.2s;
-        }
-        .btn-start:hover { transform: scale(1.05); }
 
-        #quiz-section, #result-section { display: none; }
-        
-        .question { font-size: 1.3rem; margin-bottom: 25px; min-height: 60px; font-weight: 400;}
-        .options { display: flex; flex-direction: column; gap: 12px; }
-        
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        /* ปุ่มและตัวเลือก */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            width: 100%;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
         .option-btn {
-            background: #f0f0f0; border: 2px solid transparent;
-            padding: 15px 20px; border-radius: 16px; font-size: 1rem;
-            cursor: pointer; font-family: 'Prompt', sans-serif;
-            text-align: left; transition: all 0.2s;
-        }
-        .option-btn:hover { background: #e0e0e0; border-color: #ccc; transform: translateY(-2px); }
-        
-        .progress-bar {
-            width: 100%; background: #eee; height: 8px;
-            border-radius: 10px; margin-bottom: 30px; overflow: hidden;
-        }
-        .progress {
-            height: 100%; background: #333; width: 0%; transition: width 0.3s ease;
+            background: transparent;
+            border: 2px solid #e0e0e0;
+            color: var(--text-main);
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            transition: all 0.2s;
         }
 
-        /* Result Styles */
-        #faculty-box {
-            width: 150px; height: 150px; border-radius: 30px;
-            margin: 0 auto 20px auto; display: flex;
-            align-items: center; justify-content: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #fafafa;
         }
-        #result-faculty { font-size: 1.8rem; font-weight: 600; margin-bottom: 10px; }
-        #result-desc { font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 20px; }
-        #result-pos { font-size: 1.2rem; font-weight: 600; padding: 10px; border-radius: 12px; background: #f0f0f0; display: inline-block;}
-        
-        .faculty-text { margin-top: 10px; color: #fff; font-weight: bold; padding: 0 10px; text-shadow: 0 1px 3px rgba(0,0,0,0.3);}
-        
-        .reset-btn { margin-top: 30px; background: transparent; border: 1px solid #111; color: #111; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-family: 'Prompt'; }
-        .reset-btn:hover { background: #111; color: #fff; }
+
+        /* ส่วนแสดงผลต่างๆ */
+        #quiz-screen, #result-screen {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .active {
+            display: flex !important;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .progress {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* หน้า Result */
+        .result-header {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 24px;
+            transition: background 0.5s ease;
+        }
+
+        .faculty-name {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .result-desc {
+            font-size: 15px;
+            color: #444;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        .role-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
 <div id="app">
-    <div id="start-section">
+    <div id="start-screen" class="active">
         <h1>คุณเหมาะกับการเป็นแฟนคณะไหน?</h1>
-        <p class="subtitle"> คณะของมหาวิทยาลัยเบงจันทร์</p>
-        <button class="btn-start" onclick="startQuiz()">เริ่มทำแบบทดสอบเลย!</button>
-    </div>
-
-    <div id="quiz-section">
-        <div class="progress-bar"><div class="progress" id="progress"></div></div>
-        <div class="question" id="question-text">คำถามจะอยู่ที่นี่</div>
-        <div class="options" id="options-container"></div>
-    </div>
-
-    <div id="result-section">
-        <div id="faculty-box">
-            <span class="faculty-text" id="box-text">คณะ</span>
+        <p class="subtitle"> คณะภายในมหาวิทยาลัยเบงจันทร์</p>
+        <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/8142/8142491.png" alt="heart" style="width: 120px; opacity: 0.8; margin-bottom: 40px;">
         </div>
-        <div id="result-faculty">ชื่อคณะ</div>
-        <div id="result-desc">คำอธิบายความกาว</div>
-        <div id="result-pos">รุก หรือ รับ</div>
-        <br>
-        <button class="reset-btn" onclick="location.reload()">เล่นใหม่อีกรอบ</button>
+        <button class="btn" onclick="startQuiz()">เริ่มทำแบบทดสอบ</button>
+    </div>
+
+    <div id="quiz-screen">
+        <div class="progress" id="progress">1 / 20</div>
+        <div class="question-text" id="question">คำถามจะแสดงที่นี่</div>
+        <div id="options"></div>
+    </div>
+
+    <div id="result-screen">
+        <div class="result-header" id="result-header">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">เนื้อคู่ของคุณคือเด็ก...</div>
+            <div class="faculty-name" id="faculty-name">คณะชื่อ</div>
+        </div>
+        <div class="result-desc" id="result-desc">คำอธิบายยาวๆ</div>
+        <div class="role-box" id="role-box">โพสิชันของคุณ: รุก/รับ</div>
+        <button class="btn" onclick="location.reload()" style="background: #2d2d2d;">เล่นอีกครั้ง</button>
     </div>
 </div>
 
 <script>
-    // ข้อมูล 14 คณะ อิงสีตามภาพเป๊ะๆ พร้อมคำอธิบายปั่นๆ
-    const faculties = [
-        { id: 'eng', name: 'คณะวิศวกรรมศาสตร์', color: '#16163F', textcolor: '#fff', 
-          desc: 'คุณชอบความทรหดอดทน ชอบคนคุยไม่ค่อยรู้เรื่อง และรักกลิ่นเหงื่อผสมน้ำมันเครื่อง คุณคือเดอะแบกที่พร้อมซ่อมหัวใจให้คนเถื่อน!' },
-        { id: 'sci', name: 'คณะวิทยาศาสตร์', color: '#F48037', textcolor: '#fff',
-          desc: 'คุณเป็นคนมีเหตุผล (ที่แปลกๆ) คุณเหมาะกับพวกที่ชอบทดลองอะไรแผลงๆ ความรักของคุณคือสมการที่ไม่มีวันลงตัว และคุณก็ชอบซะด้วย' },
-        { id: 'agr', name: 'คณะเกษตรศาสตร์', color: '#8DA55B', textcolor: '#fff',
-          desc: 'คุณรักธรรมชาติและพร้อมลุยโคลน! คุณเหมาะกับคนที่รักต้นไม้ใบหญ้ามากกว่าคน เดทแรกคือการไปดำนา หรือไม่ก็จับแมลงแสงตะวัน' },
-        { id: 'arch', name: 'คณะสถาปัตยกรรมศาสตร์ฯ', color: '#880D1E', textcolor: '#fff',
-          desc: 'คุณชอบคนขอบตาดำ กลิ่นกาแฟคั่วเข้ม และการถูกเทเพราะ "ปั่นโมเดลอยู่" ความรักของคุณคืองานอาร์ตที่ไม่มีวันสร้างเสร็จ' },
-        { id: 'art', name: 'คณะวิจิตรศิลป์', color: '#272525', textcolor: '#fff',
-          desc: 'คุณชอบความติสท์แตก เดาใจยาก อินดี้จัดๆ แฟนคุณอาจจะวาดรูปคุณออกมาเป็นก้อนอะไรสักอย่างแล้วบอกว่านี่คือความงามนามธรรม' },
-        { id: 'music', name: 'คณะดุริยางคศาสตร์', color: '#662F89', textcolor: '#fff',
-          desc: 'คุณแพ้ทางคนเล่นดนตรี! คุณพร้อมที่จะเขินม้วนตอนโดนดีดกีตาร์จีบกลางโรงอาหาร แม้ว่าเขาจะเล่นเพี้ยนก็ตาม' },
-        { id: 'comm', name: 'คณะนิเทศศาสตร์', color: '#FDEAFB', textcolor: '#333',
-          desc: 'คุณชอบแสงสีเสียง และการเป็นคอนเทนต์! แฟนคุณจะพกกล้องตลอดเวลา และคุณคือพระเอก/นางเอกใน Vlog ของเขาเสมอ' },
-        { id: 'law', name: 'คณะนิติศาสตร์', color: '#C08D16', textcolor: '#fff',
-          desc: 'คุณชอบเถียง! และคุณก็ต้องการคนที่จะมาเถียงด้วยด้วยข้อกฎหมาย ความรักของคุณคือการร่างสัญญาว่าด้วยการห้ามนอกใจฉบับแก้ไขเพิ่มเติม' },
-        { id: 'hum', name: 'คณะมนุษยศาสตร์ฯ', color: '#B3D34F', textcolor: '#333',
-          desc: 'คุณเป็นนักอ่านใจ ชอบความลึกซึ้ง แฟนคุณจะวิเคราะห์คำว่า "อืม" ของคุณเป็นเรียงความ 3 หน้ากระดาษ' },
-        { id: 'bus', name: 'คณะบริหารธุรกิจ', color: '#D2232A', textcolor: '#fff',
-          desc: 'คุณชอบความหรูหราและการคำนวณต้นทุนกำไร! แฟนคณะนี้จะคำนวณความคุ้มค่าของการไปเดทกับคุณด้วยไฟล์ Excel' },
-        { id: 'edu', name: 'คณะครุศาสตร์', background: 'linear-gradient(135deg, #E6C25A, #F5D97C)', textcolor: '#333',
-          desc: 'คุณต้องการคนดูแลที่จู้จี้จุกจิกเหมือนแม่คนที่สอง! เขาจะคอยดุเวลาคุณทำตัวไม่น่ารัก พร้อมแจกไม้เรียวเสมอ' },
-        { id: 'med', name: 'คณะแพทยศาสตร์', color: '#8CABC6', textcolor: '#fff',
-          desc: 'คุณชอบคนในเครื่องแบบสีขาว แต่ต้องทำใจนะเพราะเวลาเดทคือ 0 เดทแรกและเดทสุดท้ายคือการไปเฝ้าเขาเข้าเวร!' },
-        { id: 'dent', name: 'คณะทันตแพทยศาสตร์', color: '#5DBDE0', textcolor: '#fff',
-          desc: 'คุณมีเสน่ห์ที่รอยยิ้ม และแฟนคุณก็จะจ้องแต่ฟันคุณ! เตรียมตัวโดนด่าถ้าไม่ใช้ไหมขัดฟันหลังกินชาบูได้เลย' },
-        { id: 'vet', name: 'คณะสัตวแพทยศาสตร์', color: '#39C5EF', textcolor: '#fff',
-          desc: 'คุณชอบสัตว์ป่า! และแฟนคุณก็รักหมาแมวมากกว่าคุณแน่นอน คุณต้องยอมเป็นทาสหมายเลข 2 รองจากน้องเหมียวที่บ้านเขา' }
-    ];
+    // ข้อมูลคณะ สี และคำทำนาย (อิงตามภาพที่ให้มา)
+    const faculties = {
+        eng: { name: "คณะวิศวกรรมศาสตร์", color: "#14113E", 
+               desc: "คุณแพ้ทางคนที่มีความเป็นผู้นำ ดูดิบๆ ลุยๆ แต่ลึกๆ แล้วเป็นคนเทคแคร์เก่งมาก คุณเป็นคนที่ต้องการความมั่นคงและชอบคนที่มีเหตุผล การมีแฟนเป็นเด็กวิดวะจะทำให้คุณรู้สึกปลอดภัย เพราะถึงเขาจะปากแข็งหรือดูซึนๆ ไปบ้าง แต่ถ้าเป็นเรื่องของคุณ เขาพร้อมจะพุ่งชนและแก้ไขปัญหาให้เสมอ คุณชอบความสัมพันธ์ที่เติบโตไปด้วยกัน ลุยไหนลุยกัน ไม่ต้องประดิษฐ์เยอะ",
+               role: "ตกเป็นฝ่าย 'รับ' อย่างเต็มใจ เพราะคุณแพ้ความคลั่งรักแบบเงียบๆ ของเขา" },
+        sci: { name: "คณะวิทยาศาสตร์", color: "#F2803A", 
+               desc: "คุณเป็นคนมีเหตุมีผลและชอบค้นหาความจริง คุณจึงเหมาะกับเด็กวิทย์ที่มีตรรกะเป็นเลิศ ชอบทดลอง และมองโลกตามความเป็นจริง ความสัมพันธ์ของคุณจะเป็นแบบค่อยเป็นค่อยไป อาศัยการเรียนรู้กันและกันเหมือนการทำวิจัย คุณจะหลงรักความฉลาดและการคิดวิเคราะห์ของเขา แม้บางครั้งเขาจะดูเนิร์ดหรือมุ่งมั่นกับบางสิ่งมากเกินไป แต่นั่นแหละคือเสน่ห์ที่คุณมองหา",
+               role: "เป็น 'รุก' ในเรื่องอีโมชันนอล (คอยเติมความหวาน) และเป็น 'รับ' ในเรื่องการตัดสินใจ" },
+        agr: { name: "คณะเกษตรศาสตร์", color: "#95A161", 
+               desc: "คุณเป็นคนรักธรรมชาติ สบายๆ และเกลียดความวุ่นวาย คุณเหมาะกับเด็กเกษตรที่ใช้ชีวิตติดดิน เรียบง่าย และมีความอดทนสูงมากก คุณชอบคนที่อยู่ด้วยแล้วสบายใจ ไม่ต้องแต่งตัวหรูหราตลอดเวลา แค่จูงมือกันไปเดินเล่นหรือปลูกต้นไม้ด้วยกันก็มีความสุขแล้ว แฟนคณะนี้จะดูแลคุณดีเหมือนที่เขาดูแลต้นไม้และสัตว์ของเขา อบอุ่นและพึ่งพาได้เสมอ",
+               role: "คุณมักจะได้เป็นฝ่าย 'รับ' เพราะเขาพร้อมจะอุ้มคุณและดูแลคุณประหนึ่งลูกเจี๊ยบตัวน้อย" },
+        arch: { name: "คณะสถาปัตยกรรมศาสตร์ฯ", color: "#8E1313", 
+               desc: "เด็กสถาปัตย์คือตัวแทนของความติสท์และการอดหลับอดนอน! คุณหลงใหลในคนที่มีแพสชั่น มีสไตล์ที่โดดเด่น และมีความคิดสร้างสรรค์ คุณเข้าใจธรรมชาติของคนทำงานศิลปะและพร้อมจะเป็นพื้นที่ปลอดภัยให้เขาในวันที่เขาปั่นโปรเจกต์จนหัวหมุน ความสัมพันธ์ของคุณจะเต็มไปด้วยสีสัน การไปเดทที่อาร์ตแกลเลอรี่ หรือคาเฟ่ชิคๆ คือทางของคุณ",
+               role: "คุณต้องเป็นฝ่าย 'รุก' (ในการเข้าไปดูแลชีวิตเขา) เพราะแฟนคุณน่าจะลืมกินข้าวบ่อยมาก!" },
+        fineart: { name: "คณะวิจิตรศิลป์", color: "#2B2A2A", 
+               desc: "คุณมีอารมณ์ศิลปินซ่อนอยู่ และมีแรงดึงดูดกับคนที่มีเอกลักษณ์เฉพาะตัวสูง คาดเดาไม่ได้ และมีโลกส่วนตัว คุณเหมาะกับเด็กวิจิตรศิลป์ที่ใช้ความรู้สึกนำทางชีวิต ความรักของคุณทั้งคู่จะลึกซึ้ง โรแมนติกแบบมีชั้นเชิง และอาจจะดราม่านิดๆ พอเป็นสียสัน คุณชอบการแสดงออกทางความรักที่ผ่านผลงานศิลปะ บทเพลง หรือสายตา มากกว่าคำพูดธรรมดา",
+               role: "สลับกัน 'รุก-รับ' ตามแต่อารมณ์และมวลความรู้สึกในแต่ละวัน" },
+        music: { name: "คณะดุริยางคศาสตร์", color: "#6A2F8B", 
+               desc: "แพ้ทางคนเล่นดนตรีใช่มั้ยล่ะ? คุณเป็นคนมีสุนทรียภาพในหัวใจ อ่อนไหว และโรแมนติก คุณเหมาะกับคนที่มีจังหวะในหัวใจ สามารถใช้เสียงเพลงปลอบประโลมคุณได้ในวันที่เหนื่อยล้า คุณชอบฟีลลิ่งของการนั่งมองแฟนซ้อมดนตรี หรือร้องเพลงให้ฟัง ความสัมพันธ์ของคุณจะมีแต่ความสุนทรีย์ แม้เขาจะอารมณ์ศิลปินไปบ้าง แต่เขาก็รักคุณหมดหัวใจ",
+               role: "เป็น 'รับ' นั่งสวยๆ หล่อๆ รอฟังเขาร้องเพลงจีบคุณได้เลย" },
+        comm: { name: "คณะนิเทศศาสตร์", color: "#F7E6F8", 
+               desc: "คุณเป็นคนร่าเริง ชอบเข้าสังคม และชอบความโดดเด่น คุณเหมาะกับเด็กนิเทศที่เอนเนอร์จี้ล้นเหลือ คุยเก่ง เฟรนด์ลี่ และรู้ว่าต้องเอนเตอร์เทนคนรักยังไงให้มีความสุข คุณชอบความสัมพันธ์ที่หวือหวา มีอะไรเซอร์ไพรส์ตลอดเวลา ไปเดทกันทีก็ต้องมีคอนเทนต์ มีรูปสวยๆ ลงโซเชียล แฟนคณะนี้จะทำให้ชีวิตคุณไม่มีคำว่าน่าเบื่อ",
+               role: "เป็น 'รุก' ในการคิดคอนเทนต์เดท และ 'รับ' การปรนนิบัติแบบซุปตาร์จากเขา" },
+        law: { name: "คณะนิติศาสตร์", color: "#B18919", 
+               desc: "คุณแพ้คนเก่ง คนเนี้ยบ และคนที่มีวาทศิลป์ คุณเหมาะกับเด็กนิติที่ดูสุขุม ภูมิฐาน และเป๊ะในทุกระเบียบนิ้ว คุณต้องการคนที่ปกป้องคุณได้ด้วยเหตุผลและกฎหมาย (ฮา) คุณชอบการถกเถียงเชิงตรรกะกับแฟน และรู้สึกภูมิใจเวลาที่เห็นเขาตั้งใจอ่านหนังสือหนาเป็นตั้งๆ ความสัมพันธ์นี้อาจจะดูจริงจัง แต่ลึกๆ เขามีมุมอ้อนที่ให้คุณเห็นแค่คนเดียว",
+               role: "คุณต้องเป็น 'รุก' เพื่อทลายกำแพงความขรึมของเขา แล้วเขาจะยอมเป็นแมวน้อยให้คุณเอง" },
+        human: { name: "คณะมนุษยศาสตร์และสังคมศาสตร์", color: "#A7DB60", 
+               desc: "คุณเป็นผู้ฟังที่ดี มีความเห็นอกเห็นใจ และชอบการพูดคุยแบบ Deep Talk คุณเหมาะกับเด็กมนุษยฯ ที่เข้าใจโลก เข้าใจคน และมักจะมองเห็นความสวยงามในสิ่งเล็กๆ น้อยๆ ความสัมพันธ์ของคุณจะอบอุ่น ละมุนละไม เหมือนได้อ่านหนังสือดีๆ สักเล่ม คุณทั้งคู่พร้อมที่จะซัพพอร์ตความรู้สึกของกันและกันในทุกๆ เรื่อง",
+               role: "เป็นฝ่าย 'รับ' พลังงานบวกและความใส่ใจที่เขาพร้อมจะเทให้คุณหมดหน้าตัก" },
+        bus: { name: "คณะบริหารธุรกิจ", color: "#C62529", 
+               desc: "คุณเป็นคนมีเป้าหมาย ทะเยอทะยาน และมองหาความมั่นคงในชีวิต คุณจึงเหมาะกับเด็กบริหารที่ดูดี มีความเป็นผู้นำ และเก่งเรื่องการจัดการ (รวมถึงจัดการหัวใจคุณด้วย) คุณชอบคนที่แต่งตัวดี มีคลาส และสามารถวางแผนอนาคตร่วมกับคุณได้ เขาอาจจะบ้างานบ้าง แต่เขาก็รู้ว่าต้องจัดสรรเวลามาดูแลคุณยังไงให้คุณรู้สึกเป็นคนพิเศษเสมอ",
+               role: "เป็น 'รับ' ให้เขาเปย์และจัดการวางแผนทริปเดทเริ่ดๆ ให้คุณ" },
+        edu: { name: "คณะครุศาสตร์", color: "#DFAC49", 
+               desc: "คุณมีความเป็นเด็กในตัวสูง และโหยหาคนที่พร้อมจะเข้าใจและสอนคุณอย่างใจเย็น คุณเหมาะกับเด็กครุศาสตร์ที่มีจิตวิทยา อบอุ่น มีความเป็นผู้ใหญ่ (แม้บางครั้งจะแอบขี้บ่นเหมือนแม่) เขาพร้อมที่จะรับฟัง อบรม และดูแลคุณอย่างดีที่สุด ความสัมพันธ์นี้จะเป็นความรักที่บริสุทธิ์ หวังดีต่อกัน และพร้อมที่จะจับมือกันข้ามผ่านทุกปัญหา",
+               role: "เป็น 'รับ' แบบเด็กดื้อที่รอให้ครูมาดุและลูบหัวด้วยความเอ็นดู" },
+        med: { name: "คณะแพทยศาสตร์", color: "#92B9CD", 
+               desc: "คุณเป็นคนใจกว้าง มีวุฒิภาวะสูง และมีความเสียสละ คุณถึงเหมาะกับเด็กหมอ! คุณรู้ดีว่าเขาไม่มีเวลาให้คุณตลอด 24 ชั่วโมงเพราะเขาต้องไปดูแลคนอื่น แต่คุณก็ภูมิใจในตัวเขา คุณชอบคนเก่ง คนที่ดูสะอาดสะอ้าน และเอาใจใส่สุขภาพ เวลาเขาว่างเมื่อไหร่ เขาจะชดเชยเวลาที่หายไปให้คุณอย่างคุ้มค่าที่สุดแน่นอน",
+               role: "คุณมักจะเป็น 'รุก' ในการดูแลจัดการชีวิตส่วนตัวให้เขา เพราะเวลาเขาน้อยเหลือเกิน" },
+        dent: { name: "คณะทันตแพทยศาสตร์", color: "#5FBAE3", 
+               desc: "คุณชอบความสมบูรณ์แบบ แพ้รอยยิ้มสวยๆ และความสะอาดเนี้ยบ คุณเหมาะกับเด็กทันตะที่ใส่ใจในรายละเอียดเล็กๆ น้อยๆ นิ่งสงบแต่ก็แฝงความขี้เล่น ความสัมพันธ์ของคุณจะดูแพง มีระดับ และใส่ใจกันและกันขั้นสุด เขาอาจจะจู้จี้เรื่องการแปรงฟันของคุณบ้าง แต่นั่นก็เพราะเขารักและอยากดูแลคุณไปนานๆ",
+               role: "คุณมักจะเป็น 'รับ' ยอมให้เขาตรวจเช็กและดูแลความเรียบร้อยในชีวิตคุณ" },
+        vet: { name: "คณะสัตวแพทยศาสตร์", color: "#37C2E7", 
+               desc: "คุณเป็นคนรักสัตว์ อ่อนโยน และมีจิตใจเมตตา คุณเหมาะกับเด็กสัตวแพทย์สุดๆ! ความรักของคุณจะเต็มไปด้วยความน่ารัก อบอุ่น และมักจะมีน้องหมาน้องแมวมาเป็นกามเทพ คุณชอบคนที่จิตใจดี ดูแลสิ่งมีชีวิตเล็กๆ ได้ ซึ่งนั่นแปลว่าเขาก็ต้องดูแลคุณได้ดีมากๆ เช่นกัน เดทของคุณมักจะจบลงที่คาเฟ่สัตว์หรือสวนสาธารณะ",
+               role: "เป็น 'รับ' เพราะเขาจะทรีตคุณอย่างอ่อนโยนเหมือนคุณเป็นลูกหมาโกลเด้นตัวโปรดของเขา" }
+    };
 
-    // คำถาม 20 ข้อ ฮาๆ ปั่นๆ
+    // 20 คำถามจิตวิทยา
     const questions = [
-        { q: "เวลาว่างวันหยุด คุณมักจะทำอะไร?", a: [{t:"นอนเปื่อยเป็นผัก", f:'arch'}, {t:"หาเรื่องเสียตังค์", f:'bus'}, {t:"เถียงกับชาวเน็ต", f:'law'}, {t:"คุยกับหมาแมวข้างทาง", f:'vet'}] },
-        { q: "ถ้าแฟนลืมวันครบรอบ คุณจะ...", a: [{t:"ฟ้องศาลแพ่ง", f:'law'}, {t:"ทำพรีเซนเทชั่นด่า", f:'comm'}, {t:"จับไปทดลองฉีดสารแปลกๆ", f:'sci'}, {t:"แต่งเพลงสาปแช่ง", f:'music'}] },
-        { q: "สัตว์เลี้ยงในฝันของคุณคือ?", a: [{t:"ตัวเหี้ย", f:'vet'}, {t:"ปลาคราฟตัวละแสน", f:'bus'}, {t:"ก้อนหิน", f:'eng'}, {t:"นกแก้วที่ด่าคนได้", f:'edu'}] },
-        { q: "สเปคคนในฝันของคุณคือแบบไหน?", a: [{t:"ขอบตาดำคล้ำเหมือนซอมบี้", f:'arch'}, {t:"รวยและโอนไว", f:'bus'}, {t:"ยิ้มสวย ฟันสะอาด กลิ่นน้ำยาบ้วนปาก", f:'dent'}, {t:"พูดจาไม่รู้เรื่องแต่หน้าตาดี", f:'art'}] },
-        { q: "เวลาไปคาเฟ่ คุณสั่งอะไร?", a: [{t:"อเมริกาโน่ไม่หวาน ไม่เย็น ไม่ใส่น้ำ (กินกากกาแฟ)", f:'arch'}, {t:"เมนูตามกระแส ถ่ายรูปลง IG", f:'comm'}, {t:"น้ำเปล่า (ประหยัด)", f:'bus'}, {t:"ชาเขียวที่ดูเหมือนตะไคร่น้ำ", f:'sci'}] },
-        { q: "ถ้าโลกกำลังจะแตกพรุ่งนี้ วันนี้คุณจะทำอะไร?", a: [{t:"ปั่นงานส่งจารย์", f:'eng'}, {t:"ตั้งกล้อง Live สด", f:'comm'}, {t:"นั่งสมาธิปลงตก", f:'hum'}, {t:"ขุดหลุมหลบภัยเอง", f:'agr'}] },
-        { q: "เวลาโกรธ คุณมีวิธีระบายอารมณ์ยังไง?", a: [{t:"สาดสีใส่กำแพง", f:'art'}, {t:"พิมพ์เรียงความด่า 8 หน้ากระดาษ", f:'hum'}, {t:"ดีดกีตาร์จนสายขาด", f:'music'}, {t:"จับกบมาผ่าตัด", f:'med'}] },
-        { q: "คำพูดติดปากของคุณคือคำว่า?", a: [{t:"'ก็แล้วแต่เลย'", f:'art'}, {t:"'มีงบเท่าไหร่?'", f:'bus'}, {t:"'ตามมาตรา...'", f:'law'}, {t:"'นักเรียนเงียบ!'", f:'edu'}] },
-        { q: "สถานที่เดทแรกที่คุณคิดว่าเพอร์เฟกต์?", a: [{t:"ห้องดับจิต (ตื่นเต้นดี)", f:'med'}, {t:"แปลงผักเกษตร", f:'agr'}, {t:"ร้านเหล้าหลังมอ", f:'eng'}, {t:"คอนเสิร์ตอินดี้ที่ไม่มีใครรู้จัก", f:'music'}] },
-        { q: "คุณแพ้ทางคนแบบไหน?", a: [{t:"คนใส่เสื้อกาวน์", f:'med'}, {t:"คนเปื้อนดินเปื้อนโคลน", f:'agr'}, {t:"คนที่มีไม้เรียวในมือ", f:'edu'}, {t:"คนจัดฟัน", f:'dent'}] },
-        { q: "ถ้าแฟนเก่าทักมายืมเงิน คุณจะ...", a: [{t:"คิดดอกเบี้ยร้อยละ 20", f:'bus'}, {t:"แคปประจานลงทวิต", f:'comm'}, {t:"แต่งกลอนด่า", f:'hum'}, {t:"บล็อกทิ้งไปซ่อมรถต่อ", f:'eng'}] },
-        { q: "งานอดิเรกแปลกๆ ของคุณคือ?", a: [{t:"นั่งจ้องโค้ดจนตาเหล่", f:'eng'}, {t:"นับจำนวนซี่ฟันของคนเดินผ่าน", f:'dent'}, {t:"ผสมสารเคมีในห้องน้ำเล่น", f:'sci'}, {t:"จัดองค์ประกอบภาพให้จานข้าว", f:'art'}] },
-        { q: "เพลงโปรดของคุณมักจะเป็นแนวไหน?", a: [{t:"เพลงคลาสสิกที่คนฟังหลับ", f:'music'}, {t:"เพลงเพื่อชีวิต ลุยๆ", f:'agr'}, {t:"Podcast สยองขวัญ", f:'med'}, {t:"เพลงกระแสใน TikTok", f:'comm'}] },
-        { q: "ไอเท็มติดตัวที่ขาดไม่ได้?", a: [{t:"ประแจ / ไขควง", f:'eng'}, {t:"เครื่องคิดเลข", f:'bus'}, {t:"ยาดม (ดมจนจมูกบาน)", f:'arch'}, {t:"ไหมขัดฟัน", f:'dent'}] },
-        { q: "เวลานอนไม่หลับ คุณจะทำอะไร?", a: [{t:"ท่องประมวลกฎหมายแพ่ง", f:'law'}, {t:"คิดพล็อตนิยายทะลุมิติ", f:'hum'}, {t:"นั่งต่อโมเดลบ้าน", f:'arch'}, {t:"ตรวจข้อสอบทิพย์", f:'edu'}] },
-        { q: "สีเสื้อผ้าที่คุณชอบใส่มากที่สุด?", a: [{t:"ดำทะมึนทั้งตัว", f:'art'}, {t:"สีส้มแปร๊ด สะท้อนแสง", f:'sci'}, {t:"สีขาวกาวน์หมอ", f:'med'}, {t:"สีเขียวรักษ์โลก", f:'agr'}] },
-        { q: "คุณทนไม่ได้กับเรื่องอะไรมากที่สุด?", a: [{t:"คนกินข้าวไม่เคี้ยว", f:'dent'}, {t:"คนใช้ Grammar ผิด", f:'hum'}, {t:"ตัวเลขบัญชีไม่ตรง", f:'bus'}, {t:"คนที่ทำร้ายสัตว์", f:'vet'}] },
-        { q: "ความสามารถพิเศษที่คนอื่นไม่ค่อยมี?", a: [{t:"อดนอนได้ 3 วันติด", f:'arch'}, {t:"แยกเสียงหมาเห่าได้ว่าอารมณ์ไหน", f:'vet'}, {t:"ร้องเพลงเสียงสูงทะลุหลอดลม", f:'music'}, {t:"เถียงชนะทุกคนแม้ตัวเองจะผิด", f:'law'}] },
-        { q: "คุณอยากให้แฟนเรียกคุณว่าอะไร?", a: [{t:"'ที่รัก'", f:'comm'}, {t:"'เด็กโง่' (พร้อมโดนตี)", f:'edu'}, {t:"'คนไข้'", f:'med'}, {t:"'ไอ้ต้าว'", f:'art'}] },
-        { q: "สุดท้ายแล้ว คุณคิดว่าตัวเองปกติดีไหม?", a: [{t:"ปกติที่สุดในจักรวาล", f:'sci'}, {t:"บ้าไปแล้ว!", f:'art'}, {t:"ให้ศาลตัดสินละกัน", f:'law'}, {t:"ไม่รู้สิ กำลังปั่นโปรเจกต์อยู่", f:'eng'}] }
+        { q: "เวลาคุณรู้สึกเหนื่อยมากๆ สิ่งแรกที่คุณจะทำคืออะไร?", 
+          options: [
+            { text: "หาที่เงียบๆ นอนโง่ๆ คนเดียว", score: { arch: 2, fineart: 2, med: 1 } },
+            { text: "โทรหาใครสักคนเพื่อระบาย", score: { comm: 2, human: 2, edu: 1 } },
+            { text: "ไปหาของอร่อยๆ แพงๆ กินเยียวยาจิตใจ", score: { bus: 2, dent: 2 } },
+            { text: "เล่นเกม หรือหาอะไรทำเบี่ยงเบนความสนใจ", score: { eng: 2, sci: 2, vet: 1 } }
+        ]},
+        { q: "สไตล์การแต่งตัวที่คุณชอบมองที่สุดเวลาคนอื่นใส่?", 
+          options: [
+            { text: "เสื้อช็อป กางเกงยีนส์ ลุยๆ เท่ๆ", score: { eng: 3, agr: 1 } },
+            { text: "เนี้ยบๆ ดูดี เสื้อเชิ้ตสะอาดตา", score: { law: 2, med: 2, bus: 1 } },
+            { text: "สไตล์มินิมอล เอิร์ธโทน สบายตา", score: { human: 2, edu: 2, dent: 1 } },
+            { text: "แต่งตัวเก่ง แฟชั่นจ๋า มีสไตล์ชัดเจน", score: { arch: 2, comm: 2, fineart: 1 } }
+        ]},
+        { q: "ถ้าแฟนลืมวันครบรอบ คุณจะทำยังไง?", 
+          options: [
+            { text: "งอนเงียบๆ รอให้เขานึกได้เอง", score: { fineart: 2, music: 2 } },
+            { text: "บอกตรงๆ แล้วให้เขาพาไปเลี้ยงไถ่โทษ", score: { bus: 2, eng: 1, comm: 1 } },
+            { text: "เข้าใจได้ เขาอาจจะยุ่ง ค่อยฉลองวันหลัง", score: { med: 3, law: 2, arch: 1 } },
+            { text: "แอบเซอร์ไพรส์เขาแทนซะเลย", score: { edu: 2, human: 2, vet: 1 } }
+        ]},
+        { q: "สถานที่เดทในฝันของคุณคือที่ไหน?", 
+          options: [
+            { text: "นิทรรศการศิลปะ หรือ พิพิธภัณฑ์", score: { arch: 2, fineart: 3, human: 1 } },
+            { text: "คาเฟ่สัตว์เลี้ยงน่ารักๆ", score: { vet: 3, agr: 1 } },
+            { text: "รูฟท็อปบาร์ จิบเครื่องดื่มชมเมือง", score: { bus: 2, dent: 2, law: 1 } },
+            { text: "คอนเสิร์ตวงโปรด หรือบาร์แจ๊ส", score: { music: 3, comm: 1 } }
+        ]},
+        { q: "นิสัยข้อไหนของคุณที่เพื่อนมักจะบ่นบ่อยๆ?", 
+          options: [
+            { text: "ดื้อเงียบ เอาแต่ใจนิดๆ", score: { eng: 2, edu: 2 } },
+            { text: "คิดมาก ขี้น้อยใจ", score: { music: 2, human: 2, fineart: 1 } },
+            { text: "บ้างาน/บ้าเรียน จนไม่มีเวลา", score: { med: 2, arch: 2, sci: 1 } },
+            { text: "ใช้เงินเก่ง ซื้อเก่ง", score: { bus: 2, comm: 2 } }
+        ]},
+        { q: "คุณแพ้ทางคนแบบไหนมากที่สุด?", 
+          options: [
+            { text: "คนเก่ง ฉลาด มีความรู้รอบตัว", score: { sci: 2, law: 2, med: 1 } },
+            { text: "คนอบอุ่น เทคแคร์เก่ง สังเกตรายละเอียดเล็กๆ", score: { dent: 2, edu: 2, vet: 1 } },
+            { text: "คนตลก คุยเก่ง อยู่ด้วยแล้วมีเสียงหัวเราะ", score: { comm: 3, eng: 1 } },
+            { text: "คนรักธรรมชาติ รักสัตว์ จิตใจดี", score: { agr: 3, vet: 1 } }
+        ]},
+        { q: "วันหยุดยาว คุณชอบไปเที่ยวแบบไหน?", 
+          options: [
+            { text: "กางเต็นท์ ภูเขา ทะเล แคมป์ปิ้งลุยๆ", score: { eng: 2, agr: 2, vet: 1 } },
+            { text: "เที่ยวเมืองนอก ช้อปปิ้ง ถ่ายรูปคาเฟ่", score: { comm: 2, bus: 2, dent: 1 } },
+            { text: "ทัวร์ประวัติศาสตร์ เมืองเก่า ไหว้พระ", score: { law: 2, human: 2, edu: 1 } },
+            { text: "สเตย์เคชั่น นอนโรงแรมหรู พักผ่อน", score: { med: 2, sci: 1, arch: 1 } }
+        ]},
+        { q: "ของขวัญวาเลนไทน์ที่คุณอยากได้?", 
+          options: [
+            { text: "ของแฮนด์เมด หรือวาดรูปให้", score: { fineart: 3, arch: 1, edu: 1 } },
+            { text: "เครื่องประดับ/ของแบรนด์เนม", score: { bus: 2, dent: 2, law: 1 } },
+            { text: "แต่งเพลงให้ หรือเพลย์ลิสต์พิเศษ", score: { music: 3, human: 1 } },
+            { text: "ของที่ใช้ประโยชน์ได้จริงในชีวิตประจำวัน", score: { sci: 2, eng: 2, med: 1 } }
+        ]},
+        { q: "เวลาทะเลาะกัน คุณมักจะใช้วิธีไหน?", 
+          options: [
+            { text: "เงียบไปก่อน รอใจเย็นค่อยคุย", score: { arch: 2, med: 2, fineart: 1 } },
+            { text: "เอาเหตุผลมาสู้กัน เป็นข้อๆ", score: { law: 3, sci: 2 } },
+            { text: "พูดความรู้สึกออกมาตรงๆ ร้องไห้ก็คือร้อง", score: { human: 2, music: 2, comm: 1 } },
+            { text: "พยายามง้อด้วยของกิน หรือทำตัวตลก", score: { eng: 2, agr: 2 } }
+        ]},
+        { q: "แอพไหนที่คุณเปิดบ่อยที่สุด?", 
+          options: [
+            { text: "X (Twitter) / TikTok", score: { comm: 3, fineart: 1 } },
+            { text: "Spotify / Apple Music", score: { music: 3, human: 1 } },
+            { text: "แอปแต่งรูป / Pinterest", score: { arch: 2, dent: 1 } },
+            { text: "แอปหุ้น / อ่านข่าว", score: { bus: 3, law: 1, sci: 1 } }
+        ]},
+        // คำถามที่ 11-20
+        { q: "สัตว์เลี้ยงแบบไหนที่บ่งบอกความเป็นคุณ?", 
+          options: [
+            { text: "แมวขี้อ้อนแต่เอาแต่ใจ", score: { eng: 2, arch: 1 } },
+            { text: "สุนัขพันธุ์ใหญ่ พลังงานล้นเหลือ", score: { vet: 2, comm: 2 } },
+            { text: "ปลา หรือ ต้นไม้ประดับ (ดูแลง่าย)", score: { med: 2, sci: 2 } },
+            { text: "นกแก้ว พูดเก่ง", score: { edu: 2, human: 1 } }
+        ]},
+        { q: "สไตล์การทำงานของคุณเป็นแบบไหน?", 
+          options: [
+            { text: "ทำนาทีสุดท้าย ไฟลนก้นถึงจะรอด", score: { arch: 3, fineart: 1 } },
+            { text: "วางแผนเป๊ะๆ ทำตามตาราง", score: { law: 2, dent: 2, bus: 1 } },
+            { text: "ทำไปเรื่อยๆ ชิลๆ ไม่เครียด", score: { agr: 3, human: 1 } },
+            { text: "บ้าพลัง ทำจนกว่าจะเพอร์เฟกต์", score: { med: 2, eng: 2 } }
+        ]},
+        { q: "คุณชอบให้แฟนเรียกคุณว่าอะไร?", 
+          options: [
+            { text: "ชื่อเล่นเฉยๆ แมนๆ คุยกัน", score: { eng: 2, sci: 1 } },
+            { text: "ที่รัก / บี๋ (หวานๆ)", score: { edu: 2, comm: 2 } },
+            { text: "ไอ้ดื้อ / ยัยอ้วน (ฟีลเอ็นดู)", score: { vet: 2, dent: 1 } },
+            { text: "ไม่ติด เรียกอะไรก็ได้ที่แปลกๆ", score: { fineart: 2, music: 1 } }
+        ]},
+        { q: "คุณชอบฟังเพลงแนวไหน?", 
+          options: [
+            { text: "Indie / R&B ลอยๆ", score: { arch: 2, fineart: 2 } },
+            { text: "Pop / K-Pop เต้นได้ ร้องตามได้", score: { comm: 2, bus: 1 } },
+            { text: "Classic / Jazz ฟังสบาย", score: { dent: 2, law: 2 } },
+            { text: "Rock / เพื่อชีวิต ดิบๆ มันส์ๆ", score: { eng: 2, agr: 2 } }
+        ]},
+        { q: "ถ้าให้เลือกทักษะหนึ่งอย่าง คุณอยากมีอะไร?", 
+          options: [
+            { text: "โน้มน้าวใจคนเก่ง", score: { law: 2, bus: 2 } },
+            { text: "ซ่อมได้ทุกอย่างที่พัง", score: { eng: 3, sci: 1 } },
+            { text: "มีรสนิยมศิลปะเป็นเลิศ", score: { arch: 2, fineart: 2 } },
+            { text: "รักษาโรคได้ทุกชนิด", score: { med: 3, vet: 2 } }
+        ]},
+        { q: "คุณเป็นคนประเภทไหนในกลุ่มเพื่อน?", 
+          options: [
+            { text: "ตัวสร้างเสียงหัวเราะ / ตัวชง", score: { comm: 3, eng: 1 } },
+            { text: "ศิราณี คอยให้คำปรึกษาปัญหาชีวิต", score: { human: 3, edu: 2 } },
+            { text: "ผู้ตามที่ดี เพื่อนว่าไงว่าตาม", score: { agr: 2, music: 1 } },
+            { text: "ตัวตั้งตัวตี วางแผนทริป", score: { bus: 2, law: 1 } }
+        ]},
+        { q: "แนวหนังหรือซีรีส์ที่คุณชอบดู?", 
+          options: [
+            { text: "สืบสวนสอบสวน ซับซ้อนซ่อนเงื่อน", score: { sci: 2, law: 2, med: 1 } },
+            { text: "โรแมนติกคอมเมดี้ ฟินจิกหมอน", score: { edu: 2, dent: 2 } },
+            { text: "สารคดีธรรมชาติ หรือหนังชีวิต", score: { human: 2, agr: 2 } },
+            { text: "Sci-Fi อวกาศ ล้ำยุค", score: { eng: 2, arch: 1 } }
+        ]},
+        { q: "สิ่งที่คุณมักจะพกติดกระเป๋าเสมอ (นอกจากมือถือและกระเป๋าตังค์)?", 
+          options: [
+            { text: "ยาอม ยาดม ยาหม่อง", score: { med: 2, edu: 2 } },
+            { text: "ลิปสติก / กระจก / น้ำหอม", score: { comm: 2, dent: 2 } },
+            { text: "สมุดโน้ต ปากกา หรือ iPad", score: { arch: 2, bus: 2 } },
+            { text: "หูฟัง ขาดไม่ได้เด็ดขาด", score: { music: 3, fineart: 1 } }
+        ]},
+        { q: "เวลาเห็นคนกำลังลำบาก คุณจะ...", 
+          options: [
+            { text: "พุ่งเข้าไปช่วยทันทีโดยไม่คิด", score: { vet: 2, eng: 2 } },
+            { text: "ประเมินสถานการณ์ก่อน แล้วค่อยหาทางช่วย", score: { med: 2, sci: 2 } },
+            { text: "โทรแจ้งหน่วยงานที่เกี่ยวข้อง", score: { law: 2, bus: 1 } },
+            { text: "เข้าไปปลอบใจ ให้กำลังใจ", score: { human: 2, edu: 2 } }
+        ]},
+        { q: "สุดท้ายแล้ว... นิยามความรักของคุณคืออะไร?", 
+          options: [
+            { text: "ความมั่นคง ปลอดภัย และสร้างอนาคตไปด้วยกัน", score: { bus: 2, dent: 2, med: 1 } },
+            { text: "ความเข้าใจ เป็นเซฟโซนให้กันและกัน", score: { human: 2, edu: 2, agr: 1 } },
+            { text: "ความตื่นเต้น มีแพสชั่น และไม่น่าเบื่อ", score: { comm: 2, arch: 2, fineart: 1 } },
+            { text: "ความเรียบง่าย เป็นตัวของตัวเองได้ 100%", score: { eng: 2, sci: 1, law: 1 } }
+        ]}
     ];
 
     let currentQ = 0;
-    let scores = {};
-    faculties.forEach(f => scores[f.id] = 0);
+    // เก็บผลคะแนน
+    let scores = {
+        eng: 0, sci: 0, agr: 0, arch: 0, fineart: 0, music: 0, 
+        comm: 0, law: 0, human: 0, bus: 0, edu: 0, med: 0, dent: 0, vet: 0
+    };
 
     function startQuiz() {
-        document.getElementById('start-section').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        showQuestion();
+        document.getElementById('start-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        loadQuestion();
     }
 
-    function showQuestion() {
+    function loadQuestion() {
         const qData = questions[currentQ];
-        document.getElementById('question-text').innerText = `${currentQ + 1}. ${qData.q}`;
-        document.getElementById('progress').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+        document.getElementById('progress').innerText = `คำถามที่ ${currentQ + 1} / ${questions.length}`;
+        document.getElementById('question').innerText = qData.q;
         
-        const optsDiv = document.getElementById('options-container');
-        optsDiv.innerHTML = '';
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
         
-        // Shuffle options for randomness
-        let shuffledOptions = qData.a.sort(() => 0.5 - Math.random());
-
-        shuffledOptions.forEach(opt => {
+        qData.options.forEach((opt) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
-            btn.innerText = opt.t;
-            btn.onclick = () => selectOption(opt.f);
-            optsDiv.appendChild(btn);
+            btn.innerText = opt.text;
+            btn.onclick = () => selectOption(opt.score);
+            optionsDiv.appendChild(btn);
         });
     }
 
-    function selectOption(facultyId) {
-        scores[facultyId] += 1;
-        currentQ++;
+    function selectOption(scoreObj) {
+        // บวกคะแนนให้คณะต่างๆ ตามที่ตั้งไว้
+        for (let fac in scoreObj) {
+            scores[fac] += scoreObj[fac];
+        }
         
+        currentQ++;
         if (currentQ < questions.length) {
-            showQuestion();
+            loadQuestion();
         } else {
             showResult();
         }
     }
 
     function showResult() {
-        document.getElementById('quiz-section').style.display = 'none';
-        document.getElementById('result-section').style.display = 'block';
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        
+        // หาคณะที่ได้คะแนนสูงสุด
+        let topFaculty = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        let resultData = faculties[topFaculty];
 
-        // หาคณะที่คะแนนสูงสุด
-        let maxScore = -1;
-        let topFacultyId = '';
-        
-        for (const [id, score] of Object.entries(scores)) {
-            if (score > maxScore) {
-                maxScore = score;
-                topFacultyId = id;
-            }
-        }
-        
-        // ถ้าคะแนนเท่ากัน มันจะเอาอันแรกที่เจอ (หรือจะให้มันสุ่มก็ได้ แต่แบบนี้ง่ายกว่า)
-        const result = faculties.find(f => f.id === topFacultyId);
-        
-        // จัดการสีและกล่อง
-        const box = document.getElementById('faculty-box');
-        if (result.background) {
-            box.style.background = result.background;
-        } else {
-            box.style.backgroundColor = result.color;
-        }
-        
-        const boxText = document.getElementById('box-text');
-        boxText.style.color = result.textcolor;
-        boxText.innerText = result.name.replace('คณะ', '');
-
-        document.getElementById('result-faculty').innerText = `แฟนในอนาคตของคุณคือเด็ก ${result.name}!`;
-        document.getElementById('result-desc').innerText = result.desc;
-        
-        // สุ่มโพสิชันสุดปั่น
-        const positions = ["รุก (ดุดันไม่เกรงใจใคร)", "รับ (นอนเฉยๆ เดี๋ยวพี่ทำเอง)", "โบท (ได้หมดถ้าสดชื่น)", "รับบทคนดู (ชอบยืนมอง)"];
-        const randomPos = positions[Math.floor(Math.random() * positions.length)];
-        document.getElementById('result-pos').innerText = `โพสิชันของคุณคือ: ${randomPos}`;
+        // เซ็ตข้อมูลหน้า Result
+        document.getElementById('faculty-name').innerText = resultData.name;
+        document.getElementById('result-header').style.backgroundColor = resultData.color;
+        document.getElementById('result-desc').innerText = resultData.desc;
+        document.getElementById('role-box').innerHTML = `<strong>โพสิชันของคุณคือ:</strong><br>${resultData.role}`;
     }
 </script>
 
 </body>
 </html>
+
