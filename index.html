@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คุณเหมาะกับการเป็นแฟนคณะไหน? - BCU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+            --card-bg: #fff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        #app {
+            background: var(--card-bg);
+            max-width: 600px;
+            width: 90%;
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+        h1 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 600; }
+        p.subtitle { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
+        
+        .btn-start {
+            background: #111; color: #fff; border: none;
+            padding: 15px 40px; font-size: 1.1rem; border-radius: 50px;
+            cursor: pointer; font-family: 'Prompt', sans-serif;
+            transition: transform 0.2s;
+        }
+        .btn-start:hover { transform: scale(1.05); }
+
+        #quiz-section, #result-section { display: none; }
+        
+        .question { font-size: 1.3rem; margin-bottom: 25px; min-height: 60px; font-weight: 400;}
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        
+        .option-btn {
+            background: #f0f0f0; border: 2px solid transparent;
+            padding: 15px 20px; border-radius: 16px; font-size: 1rem;
+            cursor: pointer; font-family: 'Prompt', sans-serif;
+            text-align: left; transition: all 0.2s;
+        }
+        .option-btn:hover { background: #e0e0e0; border-color: #ccc; transform: translateY(-2px); }
+        
+        .progress-bar {
+            width: 100%; background: #eee; height: 8px;
+            border-radius: 10px; margin-bottom: 30px; overflow: hidden;
+        }
+        .progress {
+            height: 100%; background: #333; width: 0%; transition: width 0.3s ease;
+        }
+
+        /* Result Styles */
+        #faculty-box {
+            width: 150px; height: 150px; border-radius: 30px;
+            margin: 0 auto 20px auto; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        #result-faculty { font-size: 1.8rem; font-weight: 600; margin-bottom: 10px; }
+        #result-desc { font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 20px; }
+        #result-pos { font-size: 1.2rem; font-weight: 600; padding: 10px; border-radius: 12px; background: #f0f0f0; display: inline-block;}
+        
+        .faculty-text { margin-top: 10px; color: #fff; font-weight: bold; padding: 0 10px; text-shadow: 0 1px 3px rgba(0,0,0,0.3);}
+        
+        .reset-btn { margin-top: 30px; background: transparent; border: 1px solid #111; color: #111; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-family: 'Prompt'; }
+        .reset-btn:hover { background: #111; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="start-section">
+        <h1>คุณเหมาะกับการเป็นแฟนคณะไหน?</h1>
+        <p class="subtitle">แบบทดสอบจิตวิทยาสายฮา ฉบับมหาวิทยาลัยเบงจันทร์ (โปรดถอดสมองก่อนเล่น)</p>
+        <button class="btn-start" onclick="startQuiz()">เริ่มทำแบบทดสอบเลย!</button>
+    </div>
+
+    <div id="quiz-section">
+        <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        <div class="question" id="question-text">คำถามจะอยู่ที่นี่</div>
+        <div class="options" id="options-container"></div>
+    </div>
+
+    <div id="result-section">
+        <div id="faculty-box">
+            <span class="faculty-text" id="box-text">คณะ</span>
+        </div>
+        <div id="result-faculty">ชื่อคณะ</div>
+        <div id="result-desc">คำอธิบายความกาว</div>
+        <div id="result-pos">รุก หรือ รับ</div>
+        <br>
+        <button class="reset-btn" onclick="location.reload()">เล่นใหม่อีกรอบ</button>
+    </div>
+</div>
+
+<script>
+    // ข้อมูล 14 คณะ อิงสีตามภาพเป๊ะๆ พร้อมคำอธิบายปั่นๆ
+    const faculties = [
+        { id: 'eng', name: 'คณะวิศวกรรมศาสตร์', color: '#16163F', textcolor: '#fff', 
+          desc: 'คุณชอบความทรหดอดทน ชอบคนคุยไม่ค่อยรู้เรื่อง และรักกลิ่นเหงื่อผสมน้ำมันเครื่อง คุณคือเดอะแบกที่พร้อมซ่อมหัวใจให้คนเถื่อน!' },
+        { id: 'sci', name: 'คณะวิทยาศาสตร์', color: '#F48037', textcolor: '#fff',
+          desc: 'คุณเป็นคนมีเหตุผล (ที่แปลกๆ) คุณเหมาะกับพวกที่ชอบทดลองอะไรแผลงๆ ความรักของคุณคือสมการที่ไม่มีวันลงตัว และคุณก็ชอบซะด้วย' },
+        { id: 'agr', name: 'คณะเกษตรศาสตร์', color: '#8DA55B', textcolor: '#fff',
+          desc: 'คุณรักธรรมชาติและพร้อมลุยโคลน! คุณเหมาะกับคนที่รักต้นไม้ใบหญ้ามากกว่าคน เดทแรกคือการไปดำนา หรือไม่ก็จับแมลงแสงตะวัน' },
+        { id: 'arch', name: 'คณะสถาปัตยกรรมศาสตร์ฯ', color: '#880D1E', textcolor: '#fff',
+          desc: 'คุณชอบคนขอบตาดำ กลิ่นกาแฟคั่วเข้ม และการถูกเทเพราะ "ปั่นโมเดลอยู่" ความรักของคุณคืองานอาร์ตที่ไม่มีวันสร้างเสร็จ' },
+        { id: 'art', name: 'คณะวิจิตรศิลป์', color: '#272525', textcolor: '#fff',
+          desc: 'คุณชอบความติสท์แตก เดาใจยาก อินดี้จัดๆ แฟนคุณอาจจะวาดรูปคุณออกมาเป็นก้อนอะไรสักอย่างแล้วบอกว่านี่คือความงามนามธรรม' },
+        { id: 'music', name: 'คณะดุริยางคศาสตร์', color: '#662F89', textcolor: '#fff',
+          desc: 'คุณแพ้ทางคนเล่นดนตรี! คุณพร้อมที่จะเขินม้วนตอนโดนดีดกีตาร์จีบกลางโรงอาหาร แม้ว่าเขาจะเล่นเพี้ยนก็ตาม' },
+        { id: 'comm', name: 'คณะนิเทศศาสตร์', color: '#FDEAFB', textcolor: '#333',
+          desc: 'คุณชอบแสงสีเสียง และการเป็นคอนเทนต์! แฟนคุณจะพกกล้องตลอดเวลา และคุณคือพระเอก/นางเอกใน Vlog ของเขาเสมอ' },
+        { id: 'law', name: 'คณะนิติศาสตร์', color: '#C08D16', textcolor: '#fff',
+          desc: 'คุณชอบเถียง! และคุณก็ต้องการคนที่จะมาเถียงด้วยด้วยข้อกฎหมาย ความรักของคุณคือการร่างสัญญาว่าด้วยการห้ามนอกใจฉบับแก้ไขเพิ่มเติม' },
+        { id: 'hum', name: 'คณะมนุษยศาสตร์ฯ', color: '#B3D34F', textcolor: '#333',
+          desc: 'คุณเป็นนักอ่านใจ ชอบความลึกซึ้ง แฟนคุณจะวิเคราะห์คำว่า "อืม" ของคุณเป็นเรียงความ 3 หน้ากระดาษ' },
+        { id: 'bus', name: 'คณะบริหารธุรกิจ', color: '#D2232A', textcolor: '#fff',
+          desc: 'คุณชอบความหรูหราและการคำนวณต้นทุนกำไร! แฟนคณะนี้จะคำนวณความคุ้มค่าของการไปเดทกับคุณด้วยไฟล์ Excel' },
+        { id: 'edu', name: 'คณะครุศาสตร์', background: 'linear-gradient(135deg, #E6C25A, #F5D97C)', textcolor: '#333',
+          desc: 'คุณต้องการคนดูแลที่จู้จี้จุกจิกเหมือนแม่คนที่สอง! เขาจะคอยดุเวลาคุณทำตัวไม่น่ารัก พร้อมแจกไม้เรียวเสมอ' },
+        { id: 'med', name: 'คณะแพทยศาสตร์', color: '#8CABC6', textcolor: '#fff',
+          desc: 'คุณชอบคนในเครื่องแบบสีขาว แต่ต้องทำใจนะเพราะเวลาเดทคือ 0 เดทแรกและเดทสุดท้ายคือการไปเฝ้าเขาเข้าเวร!' },
+        { id: 'dent', name: 'คณะทันตแพทยศาสตร์', color: '#5DBDE0', textcolor: '#fff',
+          desc: 'คุณมีเสน่ห์ที่รอยยิ้ม และแฟนคุณก็จะจ้องแต่ฟันคุณ! เตรียมตัวโดนด่าถ้าไม่ใช้ไหมขัดฟันหลังกินชาบูได้เลย' },
+        { id: 'vet', name: 'คณะสัตวแพทยศาสตร์', color: '#39C5EF', textcolor: '#fff',
+          desc: 'คุณชอบสัตว์ป่า! และแฟนคุณก็รักหมาแมวมากกว่าคุณแน่นอน คุณต้องยอมเป็นทาสหมายเลข 2 รองจากน้องเหมียวที่บ้านเขา' }
+    ];
+
+    // คำถาม 20 ข้อ ฮาๆ ปั่นๆ
+    const questions = [
+        { q: "เวลาว่างวันหยุด คุณมักจะทำอะไร?", a: [{t:"นอนเปื่อยเป็นผัก", f:'arch'}, {t:"หาเรื่องเสียตังค์", f:'bus'}, {t:"เถียงกับชาวเน็ต", f:'law'}, {t:"คุยกับหมาแมวข้างทาง", f:'vet'}] },
+        { q: "ถ้าแฟนลืมวันครบรอบ คุณจะ...", a: [{t:"ฟ้องศาลแพ่ง", f:'law'}, {t:"ทำพรีเซนเทชั่นด่า", f:'comm'}, {t:"จับไปทดลองฉีดสารแปลกๆ", f:'sci'}, {t:"แต่งเพลงสาปแช่ง", f:'music'}] },
+        { q: "สัตว์เลี้ยงในฝันของคุณคือ?", a: [{t:"ตัวเหี้ย", f:'vet'}, {t:"ปลาคราฟตัวละแสน", f:'bus'}, {t:"ก้อนหิน", f:'eng'}, {t:"นกแก้วที่ด่าคนได้", f:'edu'}] },
+        { q: "สเปคคนในฝันของคุณคือแบบไหน?", a: [{t:"ขอบตาดำคล้ำเหมือนซอมบี้", f:'arch'}, {t:"รวยและโอนไว", f:'bus'}, {t:"ยิ้มสวย ฟันสะอาด กลิ่นน้ำยาบ้วนปาก", f:'dent'}, {t:"พูดจาไม่รู้เรื่องแต่หน้าตาดี", f:'art'}] },
+        { q: "เวลาไปคาเฟ่ คุณสั่งอะไร?", a: [{t:"อเมริกาโน่ไม่หวาน ไม่เย็น ไม่ใส่น้ำ (กินกากกาแฟ)", f:'arch'}, {t:"เมนูตามกระแส ถ่ายรูปลง IG", f:'comm'}, {t:"น้ำเปล่า (ประหยัด)", f:'bus'}, {t:"ชาเขียวที่ดูเหมือนตะไคร่น้ำ", f:'sci'}] },
+        { q: "ถ้าโลกกำลังจะแตกพรุ่งนี้ วันนี้คุณจะทำอะไร?", a: [{t:"ปั่นงานส่งจารย์", f:'eng'}, {t:"ตั้งกล้อง Live สด", f:'comm'}, {t:"นั่งสมาธิปลงตก", f:'hum'}, {t:"ขุดหลุมหลบภัยเอง", f:'agr'}] },
+        { q: "เวลาโกรธ คุณมีวิธีระบายอารมณ์ยังไง?", a: [{t:"สาดสีใส่กำแพง", f:'art'}, {t:"พิมพ์เรียงความด่า 8 หน้ากระดาษ", f:'hum'}, {t:"ดีดกีตาร์จนสายขาด", f:'music'}, {t:"จับกบมาผ่าตัด", f:'med'}] },
+        { q: "คำพูดติดปากของคุณคือคำว่า?", a: [{t:"'ก็แล้วแต่เลย'", f:'art'}, {t:"'มีงบเท่าไหร่?'", f:'bus'}, {t:"'ตามมาตรา...'", f:'law'}, {t:"'นักเรียนเงียบ!'", f:'edu'}] },
+        { q: "สถานที่เดทแรกที่คุณคิดว่าเพอร์เฟกต์?", a: [{t:"ห้องดับจิต (ตื่นเต้นดี)", f:'med'}, {t:"แปลงผักเกษตร", f:'agr'}, {t:"ร้านเหล้าหลังมอ", f:'eng'}, {t:"คอนเสิร์ตอินดี้ที่ไม่มีใครรู้จัก", f:'music'}] },
+        { q: "คุณแพ้ทางคนแบบไหน?", a: [{t:"คนใส่เสื้อกาวน์", f:'med'}, {t:"คนเปื้อนดินเปื้อนโคลน", f:'agr'}, {t:"คนที่มีไม้เรียวในมือ", f:'edu'}, {t:"คนจัดฟัน", f:'dent'}] },
+        { q: "ถ้าแฟนเก่าทักมายืมเงิน คุณจะ...", a: [{t:"คิดดอกเบี้ยร้อยละ 20", f:'bus'}, {t:"แคปประจานลงทวิต", f:'comm'}, {t:"แต่งกลอนด่า", f:'hum'}, {t:"บล็อกทิ้งไปซ่อมรถต่อ", f:'eng'}] },
+        { q: "งานอดิเรกแปลกๆ ของคุณคือ?", a: [{t:"นั่งจ้องโค้ดจนตาเหล่", f:'eng'}, {t:"นับจำนวนซี่ฟันของคนเดินผ่าน", f:'dent'}, {t:"ผสมสารเคมีในห้องน้ำเล่น", f:'sci'}, {t:"จัดองค์ประกอบภาพให้จานข้าว", f:'art'}] },
+        { q: "เพลงโปรดของคุณมักจะเป็นแนวไหน?", a: [{t:"เพลงคลาสสิกที่คนฟังหลับ", f:'music'}, {t:"เพลงเพื่อชีวิต ลุยๆ", f:'agr'}, {t:"Podcast สยองขวัญ", f:'med'}, {t:"เพลงกระแสใน TikTok", f:'comm'}] },
+        { q: "ไอเท็มติดตัวที่ขาดไม่ได้?", a: [{t:"ประแจ / ไขควง", f:'eng'}, {t:"เครื่องคิดเลข", f:'bus'}, {t:"ยาดม (ดมจนจมูกบาน)", f:'arch'}, {t:"ไหมขัดฟัน", f:'dent'}] },
+        { q: "เวลานอนไม่หลับ คุณจะทำอะไร?", a: [{t:"ท่องประมวลกฎหมายแพ่ง", f:'law'}, {t:"คิดพล็อตนิยายทะลุมิติ", f:'hum'}, {t:"นั่งต่อโมเดลบ้าน", f:'arch'}, {t:"ตรวจข้อสอบทิพย์", f:'edu'}] },
+        { q: "สีเสื้อผ้าที่คุณชอบใส่มากที่สุด?", a: [{t:"ดำทะมึนทั้งตัว", f:'art'}, {t:"สีส้มแปร๊ด สะท้อนแสง", f:'sci'}, {t:"สีขาวกาวน์หมอ", f:'med'}, {t:"สีเขียวรักษ์โลก", f:'agr'}] },
+        { q: "คุณทนไม่ได้กับเรื่องอะไรมากที่สุด?", a: [{t:"คนกินข้าวไม่เคี้ยว", f:'dent'}, {t:"คนใช้ Grammar ผิด", f:'hum'}, {t:"ตัวเลขบัญชีไม่ตรง", f:'bus'}, {t:"คนที่ทำร้ายสัตว์", f:'vet'}] },
+        { q: "ความสามารถพิเศษที่คนอื่นไม่ค่อยมี?", a: [{t:"อดนอนได้ 3 วันติด", f:'arch'}, {t:"แยกเสียงหมาเห่าได้ว่าอารมณ์ไหน", f:'vet'}, {t:"ร้องเพลงเสียงสูงทะลุหลอดลม", f:'music'}, {t:"เถียงชนะทุกคนแม้ตัวเองจะผิด", f:'law'}] },
+        { q: "คุณอยากให้แฟนเรียกคุณว่าอะไร?", a: [{t:"'ที่รัก'", f:'comm'}, {t:"'เด็กโง่' (พร้อมโดนตี)", f:'edu'}, {t:"'คนไข้'", f:'med'}, {t:"'ไอ้ต้าว'", f:'art'}] },
+        { q: "สุดท้ายแล้ว คุณคิดว่าตัวเองปกติดีไหม?", a: [{t:"ปกติที่สุดในจักรวาล", f:'sci'}, {t:"บ้าไปแล้ว!", f:'art'}, {t:"ให้ศาลตัดสินละกัน", f:'law'}, {t:"ไม่รู้สิ กำลังปั่นโปรเจกต์อยู่", f:'eng'}] }
+    ];
+
+    let currentQ = 0;
+    let scores = {};
+    faculties.forEach(f => scores[f.id] = 0);
+
+    function startQuiz() {
+        document.getElementById('start-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const qData = questions[currentQ];
+        document.getElementById('question-text').innerText = `${currentQ + 1}. ${qData.q}`;
+        document.getElementById('progress').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+        
+        const optsDiv = document.getElementById('options-container');
+        optsDiv.innerHTML = '';
+        
+        // Shuffle options for randomness
+        let shuffledOptions = qData.a.sort(() => 0.5 - Math.random());
+
+        shuffledOptions.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt.t;
+            btn.onclick = () => selectOption(opt.f);
+            optsDiv.appendChild(btn);
+        });
+    }
+
+    function selectOption(facultyId) {
+        scores[facultyId] += 1;
+        currentQ++;
+        
+        if (currentQ < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+
+        // หาคณะที่คะแนนสูงสุด
+        let maxScore = -1;
+        let topFacultyId = '';
+        
+        for (const [id, score] of Object.entries(scores)) {
+            if (score > maxScore) {
+                maxScore = score;
+                topFacultyId = id;
+            }
+        }
+        
+        // ถ้าคะแนนเท่ากัน มันจะเอาอันแรกที่เจอ (หรือจะให้มันสุ่มก็ได้ แต่แบบนี้ง่ายกว่า)
+        const result = faculties.find(f => f.id === topFacultyId);
+        
+        // จัดการสีและกล่อง
+        const box = document.getElementById('faculty-box');
+        if (result.background) {
+            box.style.background = result.background;
+        } else {
+            box.style.backgroundColor = result.color;
+        }
+        
+        const boxText = document.getElementById('box-text');
+        boxText.style.color = result.textcolor;
+        boxText.innerText = result.name.replace('คณะ', '');
+
+        document.getElementById('result-faculty').innerText = `แฟนในอนาคตของคุณคือเด็ก ${result.name}!`;
+        document.getElementById('result-desc').innerText = result.desc;
+        
+        // สุ่มโพสิชันสุดปั่น
+        const positions = ["รุก (ดุดันไม่เกรงใจใคร)", "รับ (นอนเฉยๆ เดี๋ยวพี่ทำเอง)", "โบท (ได้หมดถ้าสดชื่น)", "รับบทคนดู (ชอบยืนมอง)"];
+        const randomPos = positions[Math.floor(Math.random() * positions.length)];
+        document.getElementById('result-pos').innerText = `โพสิชันของคุณคือ: ${randomPos}`;
+    }
+</script>
+
+</body>
+</html>
